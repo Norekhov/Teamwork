@@ -1,0 +1,9 @@
+-- liquibase formatted sql
+
+-- changeset exever:1
+
+CREATE TABLE PUBLIC.TEST (
+	ID UUID NOT NULL,
+	QUERY CHARACTER VARYING,
+	CONSTRAINT TEST_PK PRIMARY KEY (ID)
+);

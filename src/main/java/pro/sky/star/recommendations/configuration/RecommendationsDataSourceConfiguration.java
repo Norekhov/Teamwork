@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource; //Я не уверен, что это правильный импорт для DataSource :/
 
@@ -20,7 +20,7 @@ public class RecommendationsDataSourceConfiguration{
         return dataSource;
     }
     @Bean(name = "recommendationsJdbcTemplate")
-    public JdbcTemplate recommendationsJdbcTemplate(@Qualifier("recommendationsDataSource") DataSource dataSource){
-        return new JdbcTemplate(dataSource);
+    public NamedParameterJdbcTemplate recommendationsJdbcTemplate(@Qualifier("recommendationsDataSource") DataSource dataSource){
+        return new NamedParameterJdbcTemplate(dataSource);
     }
 }
