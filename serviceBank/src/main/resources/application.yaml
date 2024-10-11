@@ -1,0 +1,18 @@
+server:
+  port: 8082
+
+spring:
+  h2:
+     console.enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+
+    show-sql: true
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    ROOT: ERROR
