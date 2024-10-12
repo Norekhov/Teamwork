@@ -10,8 +10,8 @@ public class ClientRecommendation {
     private UUID id;
     private List<BankRecommendation> bankRecommendations;
 
-    public ClientRecommendation(String id, List<BankRecommendation> recommendations) {
-        this.id = UUID.fromString(id);
+    public ClientRecommendation(UUID id, List<BankRecommendation> recommendations) {
+        this.id = id;
         this.bankRecommendations = recommendations;
     }
 }
