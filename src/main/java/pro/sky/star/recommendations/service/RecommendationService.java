@@ -1,7 +1,7 @@
 package pro.sky.star.recommendations.service;
 
 import org.springframework.stereotype.Service;
-import pro.sky.star.recommendations.model.RecommendationsResponseDTO;
+import pro.sky.star.recommendations.model.RecommendationsResponse;
 import pro.sky.star.recommendations.repository.RecommendationsRepository;
 
 import java.util.UUID;
@@ -14,8 +14,8 @@ public class RecommendationService {
         this.recommendationsRepository = recommendationsRepository;
     }
 
-    public RecommendationsResponseDTO getRecommendations(UUID userId) {
-        RecommendationsResponseDTO result = new RecommendationsResponseDTO();
+    public RecommendationsResponse getRecommendations(UUID userId) {
+        RecommendationsResponse result = new RecommendationsResponse();
         result.user_id =userId;
         result.recommendations=recommendationsRepository.getAllRecommendations(userId);
         return result;

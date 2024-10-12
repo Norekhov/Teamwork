@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pro.sky.star.recommendations.model.RecommendationsResponseDTO;
+import pro.sky.star.recommendations.model.RecommendationsResponse;
 import pro.sky.star.recommendations.service.RecommendationService;
 
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class RecommendationController {
 
     @Operation(summary = "Return some recommendations by user-id")
     @GetMapping(value = "/{userId}")
-    public RecommendationsResponseDTO getRecommendations(@PathVariable UUID userId){
+    public RecommendationsResponse getRecommendations(@PathVariable UUID userId){
         return recommendationService.getRecommendations(userId);
     }
 
