@@ -2,7 +2,9 @@ package pro.sky.star.recommendations.repository;
 
 import pro.sky.star.recommendations.model.Recommendation;
 
-public interface RecommendationСheck {
+import java.util.UUID;
 
-    Recommendation check(String id);
+public interface RecommendationCheck {
+
+    Recommendation check(UUID id);
 }
