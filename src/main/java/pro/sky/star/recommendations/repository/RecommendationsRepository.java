@@ -1,6 +1,7 @@
 package pro.sky.star.recommendations.repository;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -25,6 +26,14 @@ public class RecommendationsRepository {
 
     public List<Recommendation> getAllRecommendations(UUID userId) {
         SqlParameterSource userIdParameter = new MapSqlParameterSource("user_id", userId);
+        jdbcTemplate.queryForObject("""
+                DROP TABLE IF EXISTS CTE;
+                CREATE TEMPORARY TABLE CTE NOT PERSISTENT AS
+                SELECT t.TYPE TRANSACTION_TYPE, t.AMOUNT TRANSACTION_AMOUNT, p.TYPE PRODUCT_TYPE, p.NAME PRODUCT_NAME
+                FROM TRANSACTIONS t JOIN PRODUCTS p ON t.PRODUCT_ID=p.ID where USER_ID=:userId;
+                """,
+                userIdParameter,
+                Boolean.class);
         List<Recommendation> recommendations = jdbcTemplate.query("SELECT * FROM RECOMMENDATIONS", new RecommendationMapper());
         List<RecommendationRuleset> recommendationsRuleset = jdbcTemplate.query("SELECT * FROM RULESETS", new RecommendationRulesetMapper());
         List<RecommendationRule> rules = jdbcTemplate.query("SELECT * FROM RULES", new RecommendationRuleMapper());
@@ -36,9 +45,9 @@ public class RecommendationsRepository {
             }
             System.out.println(rule.description +" is " + ruleResult);
         }
-        Set<UUID> failedReccomendations = recommendationsRuleset.stream().filter(r->failedRules.contains(r.ruleId)).map(r->r.recommendationId).collect(Collectors.toSet());
+        Set<UUID> failedRecommendations = recommendationsRuleset.stream().filter(r->failedRules.contains(r.ruleId)).map(r->r.recommendationId).collect(Collectors.toSet());
         for (int i = recommendations.size()-1; i+1 > 0 ; i--) {
-            if(failedReccomendations.contains(recommendations.get(i).id)){
+            if(failedRecommendations.contains(recommendations.get(i).id)){
                 recommendations.remove(i);
             }
         }
