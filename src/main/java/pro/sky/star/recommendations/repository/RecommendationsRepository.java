@@ -21,4 +21,35 @@ public class RecommendationsRepository {
                 user);
         return result != null ? result : 0;
     }
+
+    public int checkingRulesInDBWithoutProductType(UUID user, String productType) {
+        Integer result = jdbcTemplate.queryForObject(
+                "SELECT \n" +
+                        "    SUM(AMOUNT)\n" +
+                        "FROM \n" +
+                        "    PRODUCTS p\n" +
+                        "JOIN \n" +
+                        "    TRANSACTIONS t ON t.PRODUCT_ID = p.ID\n" +
+                        "WHERE \n" +
+                        "    USER_ID = ?\n" +
+                        "    AND p.\"TYPE\" != ?",
+                Integer.class, user, productType);
+        return result != null ? result : 0;
+    }
+
+    public int checkingRulesForTransactionAmountForProductType(UUID user, String productType, String transactionType) {
+        Integer result = jdbcTemplate.queryForObject(
+                "SELECT \n" +
+                        "    SUM(AMOUNT)\n" +
+                        "FROM \n" +
+                        "    PRODUCTS p\n" +
+                        "JOIN \n" +
+                        "    TRANSACTIONS t ON t.PRODUCT_ID = p.ID\n" +
+                        "WHERE \n" +
+                        "    USER_ID = ?\n" +
+                        "    AND p.\"TYPE\" = ?\n" +
+                        "    AND t.\"TYPE\" = ?",
+                Integer.class, user, productType, transactionType);
+        return result != null ? result : 0;
+    }
 }
