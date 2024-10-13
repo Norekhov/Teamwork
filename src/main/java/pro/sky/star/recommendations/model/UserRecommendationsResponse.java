@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class RecommendationsResponse {
+public class UserRecommendationsResponse {
     private UUID userId;
     private List<Recommendation> recommendationList;
 
-    public RecommendationsResponse(UUID userId, List<Recommendation> recommendationList) {
+    public UserRecommendationsResponse(UUID userId, List<Recommendation> recommendationList) {
         this.userId = userId;
         this.recommendationList = recommendationList;
     }
 
-    public RecommendationsResponse() {
+    public UserRecommendationsResponse() {
     }
 
     public UUID getUserId() {
@@ -36,8 +36,8 @@ public class RecommendationsResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RecommendationsResponse recommendationsResponse = (RecommendationsResponse) o;
-        return Objects.equals(userId, recommendationsResponse.userId) && Objects.equals(recommendationList, recommendationsResponse.recommendationList);
+        UserRecommendationsResponse userRecommendationsResponse = (UserRecommendationsResponse) o;
+        return Objects.equals(userId, userRecommendationsResponse.userId) && Objects.equals(recommendationList, userRecommendationsResponse.recommendationList);
     }
 
     @Override

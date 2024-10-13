@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import pro.sky.star.recommendations.model.RecommendationsResponse;
+import pro.sky.star.recommendations.model.Recommendation;
+import pro.sky.star.recommendations.model.RecommendationMapper;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -42,8 +44,8 @@ public class RecommendationsRepository {
         return result != null ? result : 0;
     }
 
-    public RecommendationsResponse getAllRecommendations() {
-        return new RecommendationsResponse(); //todo
+    public List<Recommendation> getAllRecommendations() {
+        return jdbcTemplate.query("SELECT * FROM RECOMMENDATIONS", new RecommendationMapper());
     }
 
     public void deleteRecommendation() {

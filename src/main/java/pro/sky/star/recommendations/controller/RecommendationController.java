@@ -4,10 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.star.recommendations.model.Recommendation;
-import pro.sky.star.recommendations.model.RecommendationsResponse;
+import pro.sky.star.recommendations.model.UserRecommendationsResponse;
 import pro.sky.star.recommendations.service.RecommendationService;
 
 import java.util.UUID;
+import java.util.List;
 
 @RequestMapping("/recommendation")
 @RestController
@@ -20,7 +21,7 @@ public class RecommendationController {
 
     @Operation(summary = "Return some recommendations by user-id")
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<RecommendationsResponse> getRecommendations(UUID userId) {
+    public ResponseEntity<UserRecommendationsResponse> getRecommendations(UUID userId) {
         return ResponseEntity.ok(recommendationService.getRecommendations(userId));
     }
 
@@ -39,7 +40,7 @@ public class RecommendationController {
 
     @Operation(summary = "Show all recommendations")
     @GetMapping()
-    public ResponseEntity<RecommendationsResponse> getAllRecommendations() {
+    public ResponseEntity<List<Recommendation>> getAllRecommendations() {
         return ResponseEntity.ok(recommendationService.getAllRecommendations());
     }
 }

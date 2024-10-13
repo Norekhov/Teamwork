@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.star.recommendations.model.Recommendation;
-import pro.sky.star.recommendations.model.RecommendationsResponse;
+import pro.sky.star.recommendations.model.UserRecommendationsResponse;
 import pro.sky.star.recommendations.recommendation.RecommendationForInvest500;
 import pro.sky.star.recommendations.recommendation.RecommendationForSimpleLoan;
 import pro.sky.star.recommendations.recommendation.RecommendationForTopSaving;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Service
 public class RecommendationService {
-    private Logger logger = LoggerFactory.getLogger(RecommendationService.class);
+    private final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
     private final RecommendationsRepository recommendationsRepository;
 
@@ -36,12 +36,12 @@ public class RecommendationService {
         this.recommendationForTopSaving = recommendationRuleSetTopSaving;
     }
 
-    public RecommendationsResponse getRecommendations(UUID id) {
+    public UserRecommendationsResponse getRecommendations(UUID id) {
         List<Recommendation> recommendationList = new ArrayList<>();
         recommendationList.add(recommendationForInvest500.check(id));
         recommendationList.add(recommendationForTopSaving.check(id));
         recommendationList.add(recommendationForSimpleLoan.check(id));
-        return new RecommendationsResponse(id, recommendationList);
+        return new UserRecommendationsResponse(id, recommendationList);
     }
 
     public Recommendation addRecommendation(Recommendation recommendation) {
@@ -52,7 +52,7 @@ public class RecommendationService {
         recommendationsRepository.deleteRecommendation();
     }
 
-    public RecommendationsResponse getAllRecommendations() {
+    public List<Recommendation> getAllRecommendations() {
         return recommendationsRepository.getAllRecommendations();
     }
 }
