@@ -10,7 +10,7 @@ import ru.skyPro.recommendationServiceBank.service.RecommendationsService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/recommendation")
 public class RecommendationController {
 
     public final RecommendationsService service;

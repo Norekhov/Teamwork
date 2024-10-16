@@ -2,7 +2,7 @@ package ru.skyPro.recommendationServiceBank.controller;
 
 
 import org.springframework.web.bind.annotation.RestController;
-import ru.skyPro.recommendationServiceBank.model.rules.DynamicRule;
+import ru.skyPro.recommendationServiceBank.dto.DynamicRuleDto;
 import ru.skyPro.recommendationServiceBank.service.DynamicRulesService;
 
 @RestController
@@ -13,7 +13,7 @@ public class RecommendationByDynamicRulesController {
         this.service = service;
     }
 
-    public DynamicRule createDynamicRule() {
+    public DynamicRuleDto createDynamicRule() {
         return service.createDynamicRule();
     }
 }

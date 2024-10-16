@@ -29,42 +29,41 @@ public class CombinerQueryServiceImpl implements CombinerQueryService {
 
     public Query saveQuery(Rule rule) {
         return switch (rule.getQueryName()) {
-            case USER -> queryRepository.save(new Query(setQueryUserOfProduct(DEBIT)));
-            case ACTIVE -> queryRepository.save(new Query(setQueryActiveUserOfProduct(DEBIT)));
+            case USER -> queryRepository.save(new Query(setQueryUserOfProduct()));
+            case ACTIVE -> queryRepository.save(new Query(setQueryActiveUserOfProduct()));
             case TRANSACTION_SUM -> queryRepository.
-                    save(new Query(setQueryTransactionSummaryCompare(DEBIT, 1000)));
+                    save(new Query(setQueryTransactionSummaryCompare()));
             case TRANSACTION_SUM_COMPARE -> queryRepository.
-                    save(new Query(setQueryTransactionSumCompareDepositWithdraw(DEBIT)));
+                    save(new Query(setQueryTransactionSumCompareDepositWithdraw()));
             default -> throw new IllegalStateException("Unexpected value: " + rule.getQueryName());
         };
     }
 
     @Override
-    public String setQueryUserOfProduct(String product) {
+    public String setQueryUserOfProduct() {
         Rule rule = ruleRepository.findByQueryName(USER);
-        return "p.type  " + (rule.isNegate()?"!=":"=") + Arrays.stream(rule.getArguments()).filter(p -> Objects.equals(p, product));
+        return "p.type  " + (rule.isNegate() ? "!=" : "=") + rule.getArguments()[0];
     }
 
     @Override
-    public String setQueryActiveUserOfProduct(String product) {
+    public String setQueryActiveUserOfProduct() {
         Rule rule = ruleRepository.findByQueryName(ACTIVE);
-        return "p.type "  +  (rule.isNegate()?"!=":"=") + Arrays.stream(rule.getArguments()).filter(p -> Objects.equals(p, product)) + "having count(t.amount) >5 ";
+        return "SUM(CASE WHEN p.type " + (rule.isNegate() ? "!=" : "=") + rule.getArguments()[0] + "THEN 1 ELSE 0 END) > 5 ";
     }
 
     @Override
-    public String setQueryTransactionSummaryCompare(String debit, int limit) {
+    public String setQueryTransactionSummaryCompare() {
         Rule rule = ruleRepository.findByQueryName(TRANSACTION_SUM);
         return "SUM(CASE WHEN p.type " +
-                (rule.isNegate()?"!=":"=") + Arrays.stream(rule.getArguments()).filter(p -> Objects.equals(p, debit)) + " > " + limit;
+                (rule.isNegate() ? "!=" : "=") + rule.getArguments()[0] + " THEN t.amount" + (rule.isNegate() ? "!=" : "=") + rule.getArguments()[1] + " ELSE 0 END) " + rule.getArguments()[2] + rule.getArguments()[3];
     }
 
     @Override
-    public String setQueryTransactionSumCompareDepositWithdraw(String debit) {
+    public String setQueryTransactionSumCompareDepositWithdraw() {
         Rule rule = ruleRepository.findByQueryName(TRANSACTION_SUM_COMPARE);
         return "SUM(CASE WHEN p.type " +
-                (rule.isNegate()?"!=":"=") + Arrays.stream(rule.getArguments()).filter(p -> Objects.equals(p, debit)) +
-                "THEN t.amount ELSE 0 END) > SUM(CASE WHEN " +
-                "p.type " + (rule.isNegate()?"!=":"=") + " WITHDRAW "+
-                " THEN t.amount ELSE 0 END) " ;
+                (rule.isNegate() ? "!=" : "=") + rule.getArguments()[0] +
+                " THEN t.amount = 'DEPOSIT'  ELSE 0 END) " + rule.getArguments()[1] +
+                " SUM(CASE WHEN p.type = WITHDRAW  THEN t.amount = 'WITHDRAW' ELSE 0 END) ";
     }
 }
