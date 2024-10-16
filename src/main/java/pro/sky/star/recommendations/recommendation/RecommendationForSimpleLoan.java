@@ -3,7 +3,6 @@ package pro.sky.star.recommendations.recommendation;
 import org.springframework.stereotype.Component;
 import pro.sky.star.recommendations.model.Recommendation;
 import pro.sky.star.recommendations.repository.RecommendationsRepository;
-import pro.sky.star.recommendations.repository.RecommendationСheck;
 
 import java.util.UUID;
 
@@ -20,7 +19,7 @@ public class RecommendationForSimpleLoan implements RecommendationСheck {
     public Recommendation check(String id) {
         UUID uuid = UUID.fromString(id);
         Recommendation recommendation = null;
-        if (repository.checkingRulesInDBWithoutProductType(uuid, "CREDIT") > 0 &&
+        if (repository.checksIfTheUserHasUsedTheCurrentProductType(uuid, "CREDIT") > 0 &&
                 checkSumProductTypeTransactionType(uuid, "DEBIT",
                         "WITHDRAW") > 100_000 &&
                 checkSumProductTypeTransactionType(uuid, "DEBIT",
@@ -38,12 +37,12 @@ public class RecommendationForSimpleLoan implements RecommendationСheck {
                             Широкий выбор кредитных продуктов. Мы предлагаем кредиты на различные цели: покупку недвижимости, автомобиля, образование, лечение и многое другое.
                             Не упустите возможность воспользоваться выгодными условиями кредитования от нашей компании!""",
                     "Простой кредит",
-                    3);
+                    UUID.fromString("ab138afb-f3ba-4a93-b74f-0fcee86d447f"));
         }
         return recommendation;
     }
 
     private int checkSumProductTypeTransactionType(UUID uuid, String productType, String transactionType) {
-        return repository.checkingRulesForTransactionAmountForProductType(uuid, productType, transactionType);
+        return repository.checksTheTransactionAmountForTheSpecifiedProductTypeAndTransaction(uuid, productType, transactionType);
     }
 }

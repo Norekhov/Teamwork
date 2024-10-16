@@ -1,16 +1,18 @@
 package pro.sky.star.recommendations.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class Recommendation {
     private String document;
     private String name;
-    private int id;
+    private UUID id;
 
-    public Recommendation(String document, String name, int id) {
+    public Recommendation(String document, String name, UUID id) {
         this.document = document;
         this.name = name;
         this.id = id;
@@ -57,11 +59,11 @@ public class Recommendation {
         this.name = name;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 }

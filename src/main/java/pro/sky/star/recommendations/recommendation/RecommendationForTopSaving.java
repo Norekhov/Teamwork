@@ -3,7 +3,6 @@ package pro.sky.star.recommendations.recommendation;
 import org.springframework.stereotype.Component;
 import pro.sky.star.recommendations.model.Recommendation;
 import pro.sky.star.recommendations.repository.RecommendationsRepository;
-import pro.sky.star.recommendations.repository.RecommendationСheck;
 
 import java.util.UUID;
 @Component
@@ -40,12 +39,12 @@ public class RecommendationForTopSaving implements RecommendationСheck {
                             Безопасность и надежность. Ваши средства находятся под защитой банка, а доступ к ним возможен только через мобильное приложение или интернет-банкинг.                     
                             Начните использовать «Копилку» уже сегодня и станьте ближе к своим финансовым целям!""",
                     "Top Saving",
-                    2);
+                    UUID.fromString("59efc529-2fff-41af-baff-90ccd7402925"));
         }
         return recommendation;
     }
 
     private int checkSumProductTypeTransactionType(UUID uuid, String productType, String transactionType) {
-        return repository.checkingRulesForTransactionAmountForProductType(uuid, productType, transactionType);
+        return repository.checksTheTransactionAmountForTheSpecifiedProductTypeAndTransaction(uuid, productType, transactionType);
     }
 }

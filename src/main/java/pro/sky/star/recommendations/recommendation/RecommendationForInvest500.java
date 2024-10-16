@@ -3,7 +3,6 @@ package pro.sky.star.recommendations.recommendation;
 import org.springframework.stereotype.Component;
 import pro.sky.star.recommendations.model.Recommendation;
 import pro.sky.star.recommendations.repository.RecommendationsRepository;
-import pro.sky.star.recommendations.repository.RecommendationСheck;
 
 import java.util.UUID;
 
@@ -19,11 +18,12 @@ public class RecommendationForInvest500 implements RecommendationСheck {
     public Recommendation check(String id) {
         UUID uuid = UUID.fromString(id);
         Recommendation recommendation = null;
+
         if (checkSumProductTypeTransactionType(uuid, "DEBIT",
                 "DEPOSIT") +
                 checkSumProductTypeTransactionType(uuid, "DEBIT",
                         "WITHDRAW") > 0 &&
-                repository.checkingRulesInDBWithoutProductType(uuid, "INVEST") > 0 &&
+                repository.checksIfTheUserHasUsedTheCurrentProductType(uuid, "INVEST") > 0 &&
                 checkSumProductTypeTransactionType(uuid, "SAVING",
                         "DEPOSIT") > 1_000
         ) {
@@ -35,12 +35,12 @@ public class RecommendationForInvest500 implements RecommendationСheck {
                             Не упустите возможность разнообразить свой портфель, снизить риски и следить за актуальными рыночными тенденциями.
                             Откройте ИИС сегодня и станьте ближе к финансовой независимости!""",
                     "Invest 500",
-                    1);
+                    UUID.fromString("147f6a0f-3b91-413b-ab99-87f081d60d5a"));
         }
         return recommendation;
     }
 
     private int checkSumProductTypeTransactionType(UUID uuid, String productType, String transactionType) {
-        return repository.checkingRulesForTransactionAmountForProductType(uuid, productType, transactionType);
+        return repository.checksTheTransactionAmountForTheSpecifiedProductTypeAndTransaction(uuid, productType, transactionType);
     }
 }
