@@ -3,16 +3,16 @@ package pro.sky.star.recommendations.model;
 import java.util.List;
 import java.util.Objects;
 
-public class Model {
+public class UserRecommendationsResponse {
     private String userId;
     private List<Recommendation> recommendationList;
 
-    public Model(String userId, List<Recommendation> recommendationList) {
+    public UserRecommendationsResponse(String userId, List<Recommendation> recommendationList) {
         this.userId = userId;
         this.recommendationList = recommendationList;
     }
 
-    public Model() {
+    public UserRecommendationsResponse() {
     }
 
     public String getUserId() {
@@ -35,8 +35,8 @@ public class Model {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Model model = (Model) o;
-        return Objects.equals(userId, model.userId) && Objects.equals(recommendationList, model.recommendationList);
+        UserRecommendationsResponse userRecommendationsResponse = (UserRecommendationsResponse) o;
+        return Objects.equals(userId, userRecommendationsResponse.userId) && Objects.equals(recommendationList, userRecommendationsResponse.recommendationList);
     }
 
     @Override

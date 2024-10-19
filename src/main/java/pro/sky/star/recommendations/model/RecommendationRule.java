@@ -8,10 +8,10 @@ import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Objects;
 
-@Table(name = "query_product")
+@Table(name = "rules")
 @Entity
-public class Query {
-    private String query;
+public class RecommendationRule {
+    private RecommendationRuleType query;
 
     private List<String> arguments;
 
@@ -21,20 +21,20 @@ public class Query {
     @GeneratedValue
     Long id;
 
-    public Query(String query, List<String> arguments, boolean negate) {
+    public RecommendationRule(RecommendationRuleType query, List<String> arguments, boolean negate) {
         this.query = query;
         this.arguments = arguments;
         this.negate = negate;
     }
 
-    public Query() {
+    public RecommendationRule() {
     }
 
-    public String getQuery() {
+    public RecommendationRuleType getQuery() {
         return query;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(RecommendationRuleType query) {
         this.query = query;
     }
 
@@ -66,8 +66,8 @@ public class Query {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Query query1 = (Query) o;
-        return negate == query1.negate && Objects.equals(query, query1.query) && Objects.equals(arguments, query1.arguments) && Objects.equals(id, query1.id);
+        RecommendationRule recommendationRule1 = (RecommendationRule) o;
+        return negate == recommendationRule1.negate && Objects.equals(query, recommendationRule1.query) && Objects.equals(arguments, recommendationRule1.arguments) && Objects.equals(id, recommendationRule1.id);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Query {
 
     @Override
     public String toString() {
-        return "Query{" +
+        return "{" +
                 "query='" + query + '\'' +
                 ", arguments=" + arguments +
                 ", negate=" + negate +
