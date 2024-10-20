@@ -9,6 +9,7 @@ import pro.sky.star.recommendations.repository.RecommendationRulesRepository;
 import pro.sky.star.recommendations.repository.RecommendationRepository;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 public class RulesService {
@@ -30,14 +31,25 @@ public class RulesService {
         return recommendationRepository.findAll();
     }
 
-    public void deleteRulesRecommendations(long id) {
-        if (!recommendationRepository.existsById(id)) {
-            throw new RuntimeException("Ошибка! Рекомендация под id= %d не обнаружена".formatted(id));
+    public void deleteRule(long id) {
+        if (!recommendationRulesRepository.existsById(id)) {
+            logger.info("Такого правила не существует: {}", id);
         }
-        recommendationRepository.deleteById(id);
+        recommendationRulesRepository.deleteById(id);
     }
 
     public RecommendationRule create(RecommendationRule rule) {
+        RecommendationRule oldRule= recommendationRulesRepository.findByQueryAndArgumentsAndNegate(rule.getQuery(), rule.getArguments(), rule.isNegate());
+        if (!Objects.isNull(oldRule)) {
+            logger.info("Такое правило уже существует: {}", oldRule);
+            return oldRule;
+        }
+        if (Objects.isNull(rule.getId()) || rule.getId()!=0) {
+            logger.info("created new rule: {}", rule);
+            return recommendationRulesRepository.save(rule);
+        }
+        logger.info("Updated rule by id: {}", rule);
         return recommendationRulesRepository.save(rule);
+
     }
 }

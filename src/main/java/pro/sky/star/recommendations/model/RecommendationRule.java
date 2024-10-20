@@ -1,9 +1,6 @@
 package pro.sky.star.recommendations.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,15 +8,26 @@ import java.util.Objects;
 @Table(name = "rules")
 @Entity
 public class RecommendationRule {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rules_seq")
+    @SequenceGenerator(name = "rules_seq", allocationSize = 1)
+    Long id;
+
     private RecommendationRuleType query;
 
     private List<String> arguments;
 
     boolean negate;
 
-    @Id
-    @GeneratedValue
-    Long id;
+    public Long getAlternativeRuleId() {
+        return alternativeRuleId;
+    }
+
+    public void setAlternativeRuleId(Long alternativeRuleId) {
+        this.alternativeRuleId = alternativeRuleId;
+    }
+
+    Long alternativeRuleId;
 
     public RecommendationRule(RecommendationRuleType query, List<String> arguments, boolean negate) {
         this.query = query;
@@ -72,7 +80,7 @@ public class RecommendationRule {
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, arguments, negate, id);
+        return Objects.hash(query, arguments, negate);
     }
 
     @Override

@@ -14,7 +14,9 @@ import java.util.UUID;
 public class Recommendation {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "recommendations_seq")
+    @SequenceGenerator(name = "recommendations_seq", allocationSize = 1)
+
     long id;
     private UUID productId;
     private String productName;

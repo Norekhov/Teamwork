@@ -1,22 +1,23 @@
 -- liquibase formatted sql
 
 -- changeset exever:1
-
+create sequence rules_seq start with 1 increment by 1;
+create sequence recommendations_seq start with 1 increment by 1;
 create table recommendations (
-        id bigint auto_increment,
+        id bigint default next value for recommendations_seq primary key,
         product_id uuid,
         product_name varchar(255),
-        product_text varchar(1023),
-        primary key (id)
+        product_text varchar(1023)
     );
 create table rules (
-        id bigint auto_increment,
+        id bigint default next value for rules_seq primary key,
         query tinyint check (query between 0 and 3),
         arguments varchar(255) array,
         negate boolean not null,
-        primary key (id)
+        alternative_rule_id bigint,
+        constraint rules_id foreign key (alternative_rule_id) references rules(id)
     );
-create table recommendation_rule (
+create table recommendations_rule (
         rule_id bigint not null,
         recommendation_id bigint not null,
         constraint recommendation_rule_rule_id foreign key (rule_id) references rules,
@@ -37,3 +38,22 @@ INSERT INTO RECOMMENDATIONS (product_name, product_id, product_text) VALUES ('In
 Удобное оформление. Подать заявку на кредит можно онлайн на нашем сайте или в мобильном приложении.
 Широкий выбор кредитных продуктов. Мы предлагаем кредиты на различные цели: покупку недвижимости, автомобиля, образование, лечение и многое другое.
 Не упустите возможность воспользоваться выгодными условиями кредитования от нашей компании!');
+
+insert into RULES (query, arguments, negate, alternative_rule_id) values
+(0, ARRAY ['CREDIT'], TRUE, null),
+(3, ARRAY ['DEBIT', '>'], FALSE, null),
+(2, ARRAY ['DEBIT', 'DEPOSIT', '>', '100000'], FALSE, null),
+
+(0, ARRAY ['DEBIT'], FALSE, null),
+(2, ARRAY ['DEBIT', 'DEPOSIT', '>=', '50000'], FALSE, null),
+(2, ARRAY ['SAVING', 'DEPOSIT', '>=', '50000'], FALSE, 5),
+
+(0, ARRAY ['INVEST'], TRUE, null),
+(2, ARRAY ['SAVING', 'DEPOSIT', '>=', '1000'], FALSE, null);
+
+
+
+insert into recommendations_rule (recommendation_id, rule_id) values
+(3,1),(3,2),(3,3),
+(2,4),(2,6),(2,2),
+(1,4),(1,7),(1,8);
