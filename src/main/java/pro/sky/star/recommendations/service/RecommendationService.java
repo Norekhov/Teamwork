@@ -2,45 +2,94 @@ package pro.sky.star.recommendations.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import pro.sky.star.recommendations.model.Model;
-import pro.sky.star.recommendations.model.Recommendation;
-import pro.sky.star.recommendations.recommendation.RecommendationForInvest500;
-import pro.sky.star.recommendations.recommendation.RecommendationForSimpleLoan;
-import pro.sky.star.recommendations.recommendation.RecommendationForTopSaving;
-import pro.sky.star.recommendations.repository.RecommendationsRepository;
+import pro.sky.star.recommendations.model.*;
+import pro.sky.star.recommendations.repository.RecommendationRepository;
+import pro.sky.star.recommendations.repository.TransactionsRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.UUID;
 
 @Service
 public class RecommendationService {
-    private Logger logger = LoggerFactory.getLogger(RecommendationService.class);
+    private final Logger logger = LoggerFactory.getLogger(RecommendationService.class);
 
-    private final RecommendationsRepository recommendationsRepository;
+    private final JdbcTemplate jdbcTemplate;
+    private final RulesService rulesService;
+    private final RecommendationRepository recommendationRepository;
 
-    private final RecommendationForInvest500 recommendationForInvest500;
-
-    private final RecommendationForSimpleLoan recommendationForSimpleLoan;
-
-    private final RecommendationForTopSaving recommendationForTopSaving;
-
-    public RecommendationService(RecommendationsRepository recommendationsRepository,
-                                 RecommendationForInvest500 recommendationForInvest500,
-                                 RecommendationForSimpleLoan recommendationForSimpleLoan,
-                                 RecommendationForTopSaving recommendationRuleSetTopSaving) {
-        this.recommendationsRepository = recommendationsRepository;
-        this.recommendationForInvest500 = recommendationForInvest500;
-        this.recommendationForSimpleLoan = recommendationForSimpleLoan;
-        this.recommendationForTopSaving = recommendationRuleSetTopSaving;
+    public RecommendationService(RulesService rulesService, RecommendationRepository recommendationRepository, JdbcTemplate jdbcTemplate) {
+        this.rulesService = rulesService;
+        this.recommendationRepository = recommendationRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Model get(String id) {
-        List<Recommendation> recommendationList = new ArrayList<>();
-        recommendationList.add(recommendationForInvest500.check(id));
-        recommendationList.add(recommendationForTopSaving.check(id));
-        recommendationList.add(recommendationForSimpleLoan.check(id));
-        return new Model(id, recommendationList);
+    public UserRecommendationsResponse getUserRecommendations(UUID userId) {
+        Collection<RecommendationRule> rules = rulesService.getAllRules();
+        jdbcTemplate.execute("""
+                DROP TABLE IF EXISTS CTE;
+                CREATE TEMPORARY TABLE CTE NOT PERSISTENT AS
+                SELECT t.TYPE TRANSACTION_TYPE, t.AMOUNT TRANSACTION_AMOUNT, p.TYPE PRODUCT_TYPE, p.NAME PRODUCT_NAME
+                FROM TRANSACTIONS t JOIN PRODUCTS p ON t.PRODUCT_ID=p.ID where USER_ID='
+                """+userId+"';");
+        StringBuilder sql = new StringBuilder("WITH rules_cte AS(SELECT C1 as TRUE_RULE FROM(");
+        boolean isFirst = true;
+        for (RecommendationRule rule : rules) {
+            if (!isFirst) {
+                sql.append(" UNION ");
+            } else {
+                isFirst = false;
+            }
+            sql.append("SELECT CASE WHEN ").append(rule.isNegate() ? "NOT " : "").append("EXISTS (");
+            switch (rule.getQuery()) {
+                case USER_OF, ACTIVE_USER_OF -> {
+                    sql.append("SELECT * FROM CTE WHERE PRODUCT_TYPE = '").append(rule.getArguments().get(0)).append("' LIMIT 1");
+                }
+                case TRANSACTION_SUM_COMPARE -> {
+                    sql.append("SELECT SUM(TRANSACTION_AMOUNT) savings FROM CTE WHERE PRODUCT_TYPE = '")
+                            .append(rule.getArguments().get(0))
+                            .append("' AND TRANSACTION_TYPE = '")
+                            .append(rule.getArguments().get(1))
+                            .append("' HAVING savings ")
+                            .append(rule.getArguments().get(2))
+                            .append(rule.getArguments().get(3));
+                }
+                case TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW -> {
+                    sql.append("SELECT * FROM ( (SELECT SUM(TRANSACTION_AMOUNT) deposits FROM CTE WHERE PRODUCT_TYPE = '")
+                            .append(rule.getArguments().get(0))
+                            .append("' AND TRANSACTION_TYPE = 'DEPOSIT' ) JOIN (")
+                            .append("SELECT SUM(TRANSACTION_AMOUNT) withdraws FROM CTE WHERE PRODUCT_TYPE ='")
+                            .append(rule.getArguments().get(0))
+                            .append("' AND TRANSACTION_TYPE = 'WITHDRAW' ) )")
+                            .append("WHERE deposits ")
+                            .append(rule.getArguments().get(1))
+                            .append(" withdraws");
+                }
+            }
+            sql.append(") THEN ").append(rule.getId()).append(" END ");
+        }
+        sql.append(")) SELECT * FROM RECOMMENDATIONS r WHERE r.ID NOT IN (SELECT DISTINCT RECOMMENDATION_ID FROM RECOMMENDATIONS_RULE LEFT JOIN rules_cte ON rule_id=true_rule WHERE true_rule IS NULL);");
+        logger.warn(sql.toString());
+        var result = new UserRecommendationsResponse();
+        result.setUserId(userId);
+        result.setRecommendationList(jdbcTemplate.query(sql.toString(),new RecommendationMapper()));
+        return result;
+    }
+
+    public void deleteRecommendation(UUID recommendationId) {
+    }
+
+    public GetAllRecommendationsResponse getAllRecommendations() {
+        return new GetAllRecommendationsResponse(recommendationRepository.findAll());
+    }
+
+    public Recommendation addRecommendation(Recommendation recommendation) {
+//        List<RecommendationRule> recommendationRuleList = recommendation.getRule();
+//        for (RecommendationRule recommendationRule : recommendationRuleList) {
+//            recommendationRulesRepository.save(recommendationRule);
+//        }
+        return recommendationRepository.save(recommendation);
     }
 
 }
