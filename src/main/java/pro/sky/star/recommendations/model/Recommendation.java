@@ -23,13 +23,13 @@ public class Recommendation {
     private String productText;
 
     @ManyToMany
-    private List<RecommendationRule> rule;
+    private List<RecommendationRule> rules;
 
-    public Recommendation(String productName, String productText, List<RecommendationRule> rule) {
+    public Recommendation(String productName, String productText, List<RecommendationRule> rules) {
         this.productName = productName;
         this.productId = UUID.randomUUID();
         this.productText = productText;
-        this.rule = rule;
+        this.rules = rules;
     }
 
     public Recommendation() {
@@ -67,35 +67,39 @@ public class Recommendation {
         this.productText = productText;
     }
 
-    public List<RecommendationRule> getRule() {
-        return rule;
+    public List<RecommendationRule> getRules() {
+        return rules;
     }
 
-    public void setRule(List<RecommendationRule> rule) {
-        this.rule = rule;
+    public void setRules(List<RecommendationRule> rules) {
+        this.rules = rules;
     }
+    public void addRule(RecommendationRule rule) {
+        this.rules.add(rule);
+    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Recommendation recommendation = (Recommendation) o;
-        return Objects.equals(id, recommendation.id) && Objects.equals(productName, recommendation.productName) && Objects.equals(productId, recommendation.productId) && Objects.equals(productText, recommendation.productText) && Objects.equals(rule, recommendation.rule);
+        return Objects.equals(id, recommendation.id) && Objects.equals(productName, recommendation.productName) && Objects.equals(productId, recommendation.productId) && Objects.equals(productText, recommendation.productText) && Objects.equals(rules, recommendation.rules);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productName, productId, productText, rule);
+        return Objects.hash(id, productName, productId, productText, rules);
     }
 
     @Override
     public String toString() {
         return "Recommendation{" +
-                "id=" + id +
-                ", product_name='" + productName + '\'' +
-                ", product_id=" + productId +
-                ", product_text='" + productText + '\'' +
-                ", rule=" + rule +
-                '}';
+               "id=" + id +
+               ", product_name='" + productName + '\'' +
+               ", product_id=" + productId +
+               ", product_text='" + productText + '\'' +
+               ", rule=" + rules +
+               '}';
     }
 }

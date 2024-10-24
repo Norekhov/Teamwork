@@ -75,7 +75,7 @@ public class RecommendationRule {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RecommendationRule recommendationRule1 = (RecommendationRule) o;
-        return negate == recommendationRule1.negate && Objects.equals(query, recommendationRule1.query) && Objects.equals(arguments, recommendationRule1.arguments) && Objects.equals(id, recommendationRule1.id);
+        return negate == recommendationRule1.negate && Objects.equals(query, recommendationRule1.query) && Objects.equals(arguments, recommendationRule1.arguments);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class RecommendationRule {
 
     @Override
     public String toString() {
-        return "{" +
+        return "rule{" +
                 "query='" + query + '\'' +
                 ", arguments=" + arguments +
                 ", negate=" + negate +
