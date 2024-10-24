@@ -17,10 +17,10 @@ create table rules (
         alternative_rule_id bigint,
         constraint rules_id foreign key (alternative_rule_id) references rules(id)
     );
-create table recommendations_rule (
-        rule_id bigint not null,
+create table recommendations_rules (
+        rules_id bigint not null,
         recommendation_id bigint not null,
-        constraint recommendation_rule_rule_id foreign key (rule_id) references rules,
+        constraint recommendation_rule_rule_id foreign key (rules_id) references rules,
         constraint recommendation_rule_recommendation_id foreign key (recommendation_id) references recommendations
     );
 
@@ -53,7 +53,7 @@ insert into RULES (query, arguments, negate, alternative_rule_id) values
 
 
 
-insert into recommendations_rule (recommendation_id, rule_id) values
+insert into recommendations_rules (recommendation_id, rules_id) values
 (3,1),(3,2),(3,3),
 (2,4),(2,6),(2,2),
 (1,4),(1,7),(1,8);

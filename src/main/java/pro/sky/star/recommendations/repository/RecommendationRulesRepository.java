@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface RecommendationRulesRepository extends JpaRepository<RecommendationRule, Long> {
-    RecommendationRule findByQueryAndArgumentsAndNegate(RecommendationRuleType query, List<String> args, boolean negate);
+    RecommendationRule findByQueryAndArgumentsAndNegateAndAlternativeRuleId(RecommendationRuleType query, List<String> args, boolean negate, long alternativeRuleId);
 }

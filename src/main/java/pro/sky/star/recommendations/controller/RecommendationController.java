@@ -2,12 +2,10 @@ package pro.sky.star.recommendations.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pro.sky.star.recommendations.model.GetAllRecommendationsResponse;
 import pro.sky.star.recommendations.model.Recommendation;
+import pro.sky.star.recommendations.model.RecommendationRule;
 import pro.sky.star.recommendations.model.UserRecommendationsResponse;
 import pro.sky.star.recommendations.service.RecommendationService;
 
@@ -35,8 +33,8 @@ public class RecommendationController {
 
     @Operation(summary = "Remove recommendation by UUID")
     @DeleteMapping()
-    public ResponseEntity<String> deleteRecommendation(UUID recommendation_id) {
-        recommendationService.deleteRecommendation(recommendation_id);
+    public ResponseEntity<String> deleteRecommendation(long id) {
+        recommendationService.deleteRecommendation(id);
         return ResponseEntity.ok().build();
     }
 
@@ -44,5 +42,17 @@ public class RecommendationController {
     @GetMapping()
     public ResponseEntity<GetAllRecommendationsResponse> getAllRecommendations() {
         return ResponseEntity.ok(recommendationService.getAllRecommendations());
+    }
+
+    @Operation(summary = "Add rule to recommendation")
+    @PostMapping("/{recommendationId}/rule")
+    public ResponseEntity<Recommendation> addRuleToRecommendations(@PathVariable long recommendationId, @RequestBody RecommendationRule rule) {
+        return ResponseEntity.ok(recommendationService.addRuleToRecommendations(recommendationId, rule));
+    }
+
+    @Operation(summary = "Remove rule from recommendation")
+    @DeleteMapping("/{recommendationId}/rule")
+    public ResponseEntity<Recommendation> removeRuleFromRecommendations(@PathVariable long recommendationId, @RequestParam long ruleId) {
+        return ResponseEntity.ok(recommendationService.removeRuleFromRecommendations(recommendationId, ruleId));
     }
 }
