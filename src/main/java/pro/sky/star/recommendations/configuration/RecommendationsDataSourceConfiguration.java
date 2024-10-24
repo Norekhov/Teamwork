@@ -7,16 +7,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource; //Я не уверен, что это правильный импорт для DataSource :/
+import javax.sql.DataSource;
 
 @Configuration
 public class RecommendationsDataSourceConfiguration{
+
     @Bean(name="recommendationsDataSource")
-    public DataSource recommendationsDataSource(@Value("${application.recommendations-db.url}") String recommendationsUrl) {
+    public DataSource recommendationsDataSource(@Value("${application.memory-db.url}") String recommendationsUrl) {
         var dataSource = new HikariDataSource();
         dataSource.setJdbcUrl(recommendationsUrl);
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setReadOnly(true);
         return dataSource;
     }
     @Bean(name = "recommendationsJdbcTemplate")

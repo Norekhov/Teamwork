@@ -1,40 +1,48 @@
 package pro.sky.star.recommendations.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
 
-@Table(name = "query_product")
+@Table(name = "rules")
 @Entity
-public class Query {
-    private String query;
+public class RecommendationRule {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rules_seq")
+    @SequenceGenerator(name = "rules_seq", allocationSize = 1)
+    Long id;
+
+    private RecommendationRuleType query;
 
     private List<String> arguments;
 
     boolean negate;
 
-    @Id
-    @GeneratedValue
-    Long id;
+    public Long getAlternativeRuleId() {
+        return alternativeRuleId;
+    }
 
-    public Query(String query, List<String> arguments, boolean negate) {
+    public void setAlternativeRuleId(Long alternativeRuleId) {
+        this.alternativeRuleId = alternativeRuleId;
+    }
+
+    Long alternativeRuleId;
+
+    public RecommendationRule(RecommendationRuleType query, List<String> arguments, boolean negate) {
         this.query = query;
         this.arguments = arguments;
         this.negate = negate;
     }
 
-    public Query() {
+    public RecommendationRule() {
     }
 
-    public String getQuery() {
+    public RecommendationRuleType getQuery() {
         return query;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(RecommendationRuleType query) {
         this.query = query;
     }
 
@@ -66,18 +74,18 @@ public class Query {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Query query1 = (Query) o;
-        return negate == query1.negate && Objects.equals(query, query1.query) && Objects.equals(arguments, query1.arguments) && Objects.equals(id, query1.id);
+        RecommendationRule recommendationRule1 = (RecommendationRule) o;
+        return negate == recommendationRule1.negate && Objects.equals(query, recommendationRule1.query) && Objects.equals(arguments, recommendationRule1.arguments) && Objects.equals(id, recommendationRule1.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, arguments, negate, id);
+        return Objects.hash(query, arguments, negate);
     }
 
     @Override
     public String toString() {
-        return "Query{" +
+        return "{" +
                 "query='" + query + '\'' +
                 ", arguments=" + arguments +
                 ", negate=" + negate +
