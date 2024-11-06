@@ -48,26 +48,32 @@ public class RecommendationService {
 
 
     public Model get(String id) {
+        logger.info("Запрос рекомендаций для пользователя ID: {}", id);
         List<Recommendation> recommendationList = new ArrayList<>();
 
         if (!Objects.isNull(recommendationForInvest500.check(id))) {
             recommendationList.add(recommendationForInvest500.check(id));
+            logger.info("Добавлена рекомендация \"Invest 500\"");
         }
         if (!Objects.isNull(recommendationForTopSaving.check(id))) {
             recommendationList.add(recommendationForTopSaving.check(id));
+            logger.info("Добавлена рекомендация \"Top Saving\"");
         }
         if (!Objects.isNull(recommendationForSimpleLoan.check(id))) {
             recommendationList.add(recommendationForSimpleLoan.check(id));
+            logger.info("Добавлена рекомендация \"Simple Credit\"");
         }
 
 
         List<Product> productList = rulesRepository.findAll();
         UUID uuid = UUID.fromString(id);
+        logger.info("Получен список продуктов: {}", productList.size());
 
 
         for (Product product : productList) {
             for (int j = 0; j < product.getRule().size(); j++) {
                 String queryType = product.getRule().get(j).getQuery();
+                logger.debug("Проверка правила: {}", queryType);
                 if (queryType.equals("USER_OF")) {
                     boolean negate = recommendationsRepository
                             .checkUserOfAndActiveUserOf(uuid, product.getRule().get(j).getArguments().get(0), "SUM");
@@ -84,15 +90,16 @@ public class RecommendationService {
                     boolean negate = recommendationsRepository
                             .checkTransactionSumCompare(uuid, product.getRule().get(j).getArguments());
                     product.getRule().get(j).setNegate(negate);
+                    logger.debug("Правило TRANSACTION_SUM_COMPARE: {}", negate);
                 }
                 if (queryType.equals("TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW")) {
                     boolean negate = recommendationsRepository
                             .checkTransactionSumCompareDepositWithdraw(uuid, product.getRule().get(j).getArguments());
                     product.getRule().get(j).setNegate(negate);
+                    logger.debug("Правило TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW: {}", negate);
                 }
             }
 
-            // Если все правила продукта возвращают true, добавляем продукт в рекомендации
             if (product.getRule()
                     .stream()
                     .allMatch(Query::isNegate)) {
@@ -111,6 +118,7 @@ public class RecommendationService {
 
     private Product getProductJson() {
         List<Product> products = rulesRepository.findAll();
+        logger.info("Получен список продуктов, размер: {}", products.size());
         return new Product(products);
     }
 

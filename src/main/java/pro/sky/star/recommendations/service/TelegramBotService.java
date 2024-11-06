@@ -57,6 +57,7 @@ public class TelegramBotService implements UpdatesListener {
                 }
             } catch (RuntimeException e) {
                 sendMessageInTelegramBot(update.message().chat().id(), "Я работаю только с текстом");
+                logger.info("Отправлен не текст");
                 return;
             }
             if (updateText.equals("/start")) {
@@ -74,6 +75,7 @@ public class TelegramBotService implements UpdatesListener {
                 try {
                     userDB = recommendationsRepository.getIdUser(item);
                 } catch (Exception e) {
+                    logger.error("An unexpected error occurred: {}", e.getMessage());
                     sendMessageInTelegramBot(chatId, "Пользователь не найден!");
                     return;
                 }
@@ -92,6 +94,7 @@ public class TelegramBotService implements UpdatesListener {
     }
 
     private void sendMessageInTelegramBot(Long chatId, String message) {
+        logger.info("Sending message to chat ID {}: {}", chatId, message);
         SendMessage messageForSend = new SendMessage(chatId, message);
         telegramBot.execute(messageForSend);
     }
